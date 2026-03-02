@@ -1,4 +1,5 @@
 import React, { useState, useRef, useCallback, useEffect } from 'react';
+import '../glow.css';
 
 const WIDTH = 500;
 const HEIGHT = 500;
@@ -119,6 +120,8 @@ const TwoVarGraph = () => {
 	);
 	const [isDrawing, setIsDrawing] = useState(false);
 	const [selectedShape, setSelectedShape] = useState('line'); // 'line' | 'exponential' | 'parabola'
+	const [showShapeGlow, setShowShapeGlow] = useState(true);
+	const [showHistoryGlow, setShowHistoryGlow] = useState(true);
 	const containerRef = useRef(null);
 	const isDrawingRef = useRef(false);
 	isDrawingRef.current = isDrawing;
@@ -280,15 +283,9 @@ const TwoVarGraph = () => {
 	const canRedo = historyIndex < history.length;
 	const canReset = history.length > 0;
 
-	const buttonStyle = (enabled) => ({
-		padding: '4px 8px',
-		fontSize: 12,
-		cursor: enabled ? 'pointer' : 'default',
-		opacity: enabled ? 1 : 0.5,
-	});
-
 	// Axis line endpoints: extend one segment past MIN/MAX (arrows at extended ends)
-	const arrowSize = 8;
+	const arrowSize = 10;
+	const arrowHeight = 7;
 	const xMin = valueToX(EXTENDED_MIN);
 	const xMax = valueToX(EXTENDED_MAX);
 	const yMin = valueToY(EXTENDED_MIN);
@@ -309,8 +306,12 @@ const TwoVarGraph = () => {
 				border: '1px solid #ccc',
 				borderRadius: 4,
 				overflow: 'hidden',
-				backgroundColor: '#fafafa',
+				backgroundColor: '#fff',
 				touchAction: 'none',
+				userSelect: 'none',
+				WebkitUserSelect: 'none',
+				MozUserSelect: 'none',
+				msUserSelect: 'none',
 			}}
 			onMouseDown={handlePointerDown}
 			onMouseMove={handlePointerMove}
@@ -327,127 +328,143 @@ const TwoVarGraph = () => {
 					position: 'absolute',
 					top: 11,
 					left: 12,
-					display: 'flex',
-					gap: 6,
-					alignItems: 'center',
 					zIndex: 1,
 				}}
 			>
-				<button
-					type="button"
-					title="Line"
-					onClick={() => setSelectedShape((s) => (s === 'line' ? null : 'line'))}
-					style={{
-						width: 32,
-						height: 32,
-						padding: 0,
-						display: 'flex',
-						alignItems: 'center',
-						justifyContent: 'center',
-						border: '1px solid #ccc',
-						borderRadius: 4,
-						backgroundColor: '#fff',
-						cursor: 'pointer',
-						outline: selectedShape === 'line' ? '2px solid #1967d2' : 'none',
-						outlineOffset: 1,
-					}}
-				>
-					<svg width={20} height={20} viewBox="0 0 20 20" fill="none" stroke="#333" strokeWidth="1.5" strokeLinecap="round">
-						<line x1={2} y1={18} x2={18} y2={2} />
-					</svg>
-				</button>
-				<button
-					type="button"
-					title="Exponential"
-					onClick={() => setSelectedShape((s) => (s === 'exponential' ? null : 'exponential'))}
-					style={{
-						width: 32,
-						height: 32,
-						padding: 0,
-						display: 'flex',
-						alignItems: 'center',
-						justifyContent: 'center',
-						border: '1px solid #ccc',
-						borderRadius: 4,
-						backgroundColor: '#fff',
-						cursor: 'pointer',
-						outline: selectedShape === 'exponential' ? '2px solid #1967d2' : 'none',
-						outlineOffset: 1,
-					}}
-				>
-					<svg width={20} height={20} viewBox="0 0 20 20" fill="none" stroke="#333" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-						<path d={EXP_ICON_PATH} />
-					</svg>
-				</button>
-				<button
-					type="button"
-					title="Parabola"
-					onClick={() => setSelectedShape((s) => (s === 'parabola' ? null : 'parabola'))}
-					style={{
-						width: 32,
-						height: 32,
-						padding: 0,
-						display: 'flex',
-						alignItems: 'center',
-						justifyContent: 'center',
-						border: '1px solid #ccc',
-						borderRadius: 4,
-						backgroundColor: '#fff',
-						cursor: 'pointer',
-						outline: selectedShape === 'parabola' ? '2px solid #1967d2' : 'none',
-						outlineOffset: 1,
-					}}
-				>
-					<svg width={20} height={20} viewBox="0 0 20 20" fill="none" stroke="#333" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-						<path d="M 2 18 Q 10 -14 18 18" />
-					</svg>
-				</button>
+				<div className={`${showShapeGlow ? 'simple-glow ' : ''}icon-glow-wrapper`}>
+					<div
+						style={{
+							display: 'flex',
+							gap: 6,
+							alignItems: 'center',
+						}}
+					>
+						<button
+							type="button"
+							title="Line"
+							onClick={() => {
+								setSelectedShape((s) => (s === 'line' ? null : 'line'));
+								setShowShapeGlow(false);
+							}}
+							style={{
+								width: 32,
+								height: 32,
+								padding: 0,
+								display: 'flex',
+								alignItems: 'center',
+								justifyContent: 'center',
+								border: '1px solid #ccc',
+								borderRadius: 4,
+								backgroundColor: '#fff',
+								cursor: 'pointer',
+								outline: selectedShape === 'line' ? '2px solid #1967d2' : 'none',
+								outlineOffset: 1,
+							}}
+						>
+							<svg width={20} height={20} viewBox="0 0 20 20" fill="none" stroke="#333" strokeWidth="1.5" strokeLinecap="round">
+								<line x1={2} y1={18} x2={18} y2={2} />
+							</svg>
+						</button>
+						<button
+							type="button"
+							title="Exponential"
+							onClick={() => {
+								setSelectedShape((s) => (s === 'exponential' ? null : 'exponential'));
+								setShowShapeGlow(false);
+							}}
+							style={{
+								width: 32,
+								height: 32,
+								padding: 0,
+								display: 'flex',
+								alignItems: 'center',
+								justifyContent: 'center',
+								border: '1px solid #ccc',
+								borderRadius: 4,
+								backgroundColor: '#fff',
+								cursor: 'pointer',
+								outline: selectedShape === 'exponential' ? '2px solid #1967d2' : 'none',
+								outlineOffset: 1,
+							}}
+						>
+							<svg width={20} height={20} viewBox="0 0 20 20" fill="none" stroke="#333" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+								<path d={EXP_ICON_PATH} />
+							</svg>
+						</button>
+						<button
+							type="button"
+							title="Parabola"
+							onClick={() => {
+								setSelectedShape((s) => (s === 'parabola' ? null : 'parabola'));
+								setShowShapeGlow(false);
+							}}
+							style={{
+								width: 32,
+								height: 32,
+								padding: 0,
+								display: 'flex',
+								alignItems: 'center',
+								justifyContent: 'center',
+								border: '1px solid #ccc',
+								borderRadius: 4,
+								backgroundColor: '#fff',
+								cursor: 'pointer',
+								outline: selectedShape === 'parabola' ? '2px solid #1967d2' : 'none',
+								outlineOffset: 1,
+							}}
+						>
+							<svg width={20} height={20} viewBox="0 0 20 20" fill="none" stroke="#333" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+								<path d="M 2 18 Q 10 -14 18 18" />
+							</svg>
+						</button>
+					</div>
+				</div>
 			</div>
 			<div
-				style={{
-					position: 'absolute',
-					top: 11,
-					right: 12,
-					display: 'flex',
-					gap: 6,
-					alignItems: 'center',
-					zIndex: 1,
-				}}
+				className={`segmented-glow-button simple-glow compact${!showHistoryGlow ? ' hide-orbit' : ''}`}
+				style={{ position: 'absolute', top: 11, right: 12, zIndex: 1 }}
 			>
-				<button
-					type="button"
-					onClick={() => setHistoryIndex((i) => Math.max(0, i - 1))}
-					disabled={!canUndo}
-					style={buttonStyle(canUndo)}
-				>
-					Undo
-				</button>
-				<button
-					type="button"
-					onClick={() => setHistoryIndex((i) => Math.min(history.length, i + 1))}
-					disabled={!canRedo}
-					style={buttonStyle(canRedo)}
-				>
-					Redo
-				</button>
-				<button
-					type="button"
-					onClick={() => {
-						setHistory([]);
-						setHistoryIndex(0);
-					}}
-					disabled={!canReset}
-					style={{
-						...buttonStyle(canReset),
-						backgroundColor: '#e34242',
-						borderRadius: 6,
-						border: 'none',
-					}}
-				>
-					Reset
-				</button>
+				<div className="segment-container">
+					<button
+						type="button"
+						className={`segment ${!canUndo ? 'inactive' : ''}`}
+						onClick={() => {
+							if (!canUndo) return;
+							setShowHistoryGlow(false);
+							setHistoryIndex((i) => Math.max(0, i - 1));
+						}}
+						disabled={!canUndo}
+					>
+						Undo
+					</button>
+					<button
+						type="button"
+						className={`segment ${!canRedo ? 'inactive' : ''}`}
+						onClick={() => {
+							if (!canRedo) return;
+							setShowHistoryGlow(false);
+							setHistoryIndex((i) => Math.min(history.length, i + 1));
+						}}
+						disabled={!canRedo}
+					>
+						Redo
+					</button>
+					<button
+						type="button"
+						className={`segment ${!canReset ? 'inactive' : ''}`}
+						onClick={() => {
+							if (!canReset) return;
+							setShowHistoryGlow(false);
+							setHistory([]);
+							setHistoryIndex(0);
+						}}
+						disabled={!canReset}
+					>
+						Reset
+					</button>
+				</div>
 			</div>
-			<svg width={WIDTH} height={HEIGHT} style={{ display: 'block' }}>
+			<svg width={WIDTH} height={HEIGHT} style={{ display: 'block', pointerEvents: 'none' }}>
 				<defs>
 					<pattern
 						id="grid-two"
@@ -459,8 +476,8 @@ const TwoVarGraph = () => {
 					>
 						<path
 							d={`M 0 0 L 0 ${GRID_CELL} M 0 0 L ${GRID_CELL} 0 M ${GRID_CELL} 0 L ${GRID_CELL} ${GRID_CELL} M 0 ${GRID_CELL} L ${GRID_CELL} ${GRID_CELL}`}
-							stroke="#e0e0e0"
-							strokeWidth="0.5"
+							stroke="#e6e6e6"
+							strokeWidth="1"
 							fill="none"
 						/>
 					</pattern>
@@ -472,7 +489,7 @@ const TwoVarGraph = () => {
 					y1={centerY}
 					x2={xAxisRight}
 					y2={centerY}
-					stroke="#333"
+					stroke="#999999"
 					strokeWidth={2}
 				/>
 				{/* Y axis */}
@@ -481,9 +498,35 @@ const TwoVarGraph = () => {
 					y1={yAxisTop}
 					x2={centerX}
 					y2={yAxisBottom}
-					stroke="#333"
+					stroke="#999999"
 					strokeWidth={2}
 				/>
+				{/* Axis labels */}
+				<text
+					x={valueToX(10)}
+					y={centerY - 12}
+					textAnchor="middle"
+					fontSize="14px"
+					fontWeight="bold"
+					fontStyle="italic"
+					fill="#999999"
+					fontFamily="'Latin Modern Roman CK12', 'Latin Modern Roman', serif"
+				>
+					x-axis
+				</text>
+				<text
+					x={centerX + 14}
+					y={yMax + 5}
+					textAnchor="start"
+					dominantBaseline="middle"
+					fontSize="14px"
+					fontWeight="bold"
+					fontStyle="italic"
+					fill="#999999"
+					fontFamily="'Latin Modern Roman CK12', 'Latin Modern Roman', serif"
+				>
+					y-axis
+				</text>
 				{/* X axis ticks and labels */}
 				{tickValues.map((value) => {
 					const x = valueToX(value);
@@ -494,7 +537,7 @@ const TwoVarGraph = () => {
 								y1={centerY}
 								x2={x}
 								y2={centerY + 10}
-								stroke="#333"
+								stroke="#999999"
 								strokeWidth={1.5}
 							/>
 							{value !== 0 && (
@@ -502,9 +545,10 @@ const TwoVarGraph = () => {
 									x={x}
 									y={centerY + 26}
 									textAnchor="middle"
-									fontSize={14}
-									fill="#333"
-									fontFamily="system-ui, sans-serif"
+									fontSize="14px"
+									fontWeight="bold"
+									fill="#999999"
+									fontFamily="'Latin Modern Roman CK12', 'Latin Modern Roman', serif"
 								>
 									{value}
 								</text>
@@ -522,7 +566,7 @@ const TwoVarGraph = () => {
 								y1={y}
 								x2={centerX - 10}
 								y2={y}
-								stroke="#333"
+								stroke="#999999"
 								strokeWidth={1.5}
 							/>
 							{value !== 0 && (
@@ -530,9 +574,10 @@ const TwoVarGraph = () => {
 									x={centerX - 14}
 									y={y + 5}
 									textAnchor="end"
-									fontSize={14}
-									fill="#333"
-									fontFamily="system-ui, sans-serif"
+									fontSize="14px"
+									fontWeight="bold"
+									fill="#999999"
+									fontFamily="'Latin Modern Roman CK12', 'Latin Modern Roman', serif"
 								>
 									{value}
 								</text>
@@ -542,20 +587,20 @@ const TwoVarGraph = () => {
 				})}
 				{/* Arrows at all 4 ends: right (+x), left (-x), top (+y), bottom (-y) */}
 				<polygon
-					points={`${xMax - arrowSize},${centerY - arrowSize} ${xMax},${centerY} ${xMax - arrowSize},${centerY + arrowSize}`}
-					fill="#333"
+					points={`${xMax - arrowSize},${centerY - arrowHeight} ${xMax},${centerY} ${xMax - arrowSize},${centerY + arrowHeight}`}
+					fill="#999999"
 				/>
 				<polygon
-					points={`${xMin + arrowSize},${centerY - arrowSize} ${xMin},${centerY} ${xMin + arrowSize},${centerY + arrowSize}`}
-					fill="#333"
+					points={`${xMin + arrowSize},${centerY - arrowHeight} ${xMin},${centerY} ${xMin + arrowSize},${centerY + arrowHeight}`}
+					fill="#999999"
 				/>
 				<polygon
-					points={`${centerX - arrowSize},${yMax + arrowSize} ${centerX},${yMax} ${centerX + arrowSize},${yMax + arrowSize}`}
-					fill="#333"
+					points={`${centerX - arrowHeight},${yMax + arrowSize} ${centerX},${yMax} ${centerX + arrowHeight},${yMax + arrowSize}`}
+					fill="#999999"
 				/>
 				<polygon
-					points={`${centerX - arrowSize},${yMin - arrowSize} ${centerX},${yMin} ${centerX + arrowSize},${yMin - arrowSize}`}
-					fill="#333"
+					points={`${centerX - arrowHeight},${yMin - arrowSize} ${centerX},${yMin} ${centerX + arrowHeight},${yMin - arrowSize}`}
+					fill="#999999"
 				/>
 				{/* Empty circles */}
 				{emptyCirclePoints.map((p) => (
